@@ -2,6 +2,7 @@ import FilterBar from '../components/FilterBar';
 import Subnav from '../components/Subnav';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 type Set = { id: string; name: string; image?: string; price_cents?: number; items_count?: number; };
 
