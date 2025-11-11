@@ -1,20 +1,35 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 讓 next-on-pages 產出 .vercel/output
+  // 仍讓 next-on-pages 做靜態輸出，但動態頁會交給 Functions
   output: 'export',
-
-  // Edge/Workers 環境避免拉到 Node 核心模組
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      // 若有相依誤用 node:stream，直接禁用（或用瀏覽器替代）
-      'node:stream': false,
-    };
-    config.resolve.fallback = {
-      ...(config.resolve.fallback || {}),
-      stream: false,
-      async_hooks: false,
-    };
+  experimental: {
+    runtime: 'edge',
+    serverActions: { allowedOrigins: ['*'] },
+  },
+  webpack: (config, { isServer }) => {
+    // ✅ 瀏覽器端：提供 node:stream 的瀏覽器替代
+    if (!isServer) {
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        'node:stream': 'stream-browserify',
+      };
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}),
+        stream: require.resolve('stream-browserify'),
+        async_hooks: false,
+      };
+    } else {
+      // ✅ Server/Edge 端：不要載入 browser polyfills，避免使用 self/window
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        'node:stream': false,
+      };
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}),
+        stream: false,
+        async_hooks: false,
+      };
+    }
     return config;
   },
 };
