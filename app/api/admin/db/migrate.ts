@@ -1,6 +1,6 @@
 export async function onRequestPost({ env, request }) {
   const auth = request.headers.get("Authorization");
-  if (auth !== "Bearer mysecret123") {
+  if (auth !== "Bearer 35437316") {
     return new Response("Unauthorized", { status: 401 });
   }
 
