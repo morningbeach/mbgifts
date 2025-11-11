@@ -6,7 +6,7 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB"            # 這是程式裡使用的變數名稱
 database_name = "mbg-db"  # 你在 Cloudflare D1 建的資料庫名稱
-database_id = "e86972e9-aec8-433b-8189-65f653911b27"
+database_id = "9e4094af-2915-4bba-bb33-63efaadec8bc"
 
 # 綁定 R2
 [[r2_buckets]]
