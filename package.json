@@ -21,6 +21,12 @@
     "@types/react": "18.3.5",
     "@types/react-dom": "18.3.0"
   }
+  {
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  }
 }
 
 
