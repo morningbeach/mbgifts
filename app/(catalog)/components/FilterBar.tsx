@@ -112,6 +112,7 @@ export default function FilterBar({ placeholders }: Props) {
           </button>
         </div>
       </div>
+      
     </form>
   );
 }
