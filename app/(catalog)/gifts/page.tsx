@@ -20,8 +20,8 @@ async function toQueryString(searchParams: any) {
 
 type Gift = { id: string; name: string; price_cents: number; image?: string; tags?: string };
 
-export default async function GiftsPage({ searchParams }: { searchParams?: any }) {
-  const q = await toQueryString(searchParams);
+export default async function GiftsPage(props: any) {
+  const q = await toQueryString(props?.searchParams);
   const url = `/api/catalog?type=gifts${q ? `&${q}` : ''}`;
   const items: Gift[] = await (await fetch(url, { cache: 'no-store' })).json();
 
