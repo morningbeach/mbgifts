@@ -1,7 +1,9 @@
-// app/(catalog)/gifts/page.tsx
+import FilterBar from '../components/FilterBar';
+import Subnav from '../components/Subnav';
+
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
+export const fetchCache = 'force-no-store'
 
 type Gift = {
   id: string; name: string; price_cents: number; image?: string; tags?: string;
