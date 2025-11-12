@@ -1,40 +1,28 @@
-// @ts-nocheck
+import Link from "next/link";
 
-type Item = { label: string; href: string };
+type Item = { href: string; label: string };
 
-export default function Subnav({ items = [] as Item[] }) {
+const items: Item[] = [
+  { href: "/gifts", label: "Gifts" },
+  { href: "/gift-sets", label: "Gift Sets" },
+  { href: "/custom-packaging", label: "Custom Packaging" },
+];
+
+export default function Subnav() {
+  // 不使用 hooks（server-safe），暫不做 active 樣式，以確保在 Edge/Pages 上穩定編譯
   return (
-    <nav className="subnav">
-      <div className="rail">
+    <nav className="w-full border-b border-neutral-200 bg-white">
+      <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-3">
         {items.map((it) => (
-          <a key={it.href} href={it.href} className="pill">
+          <Link
+            key={it.href}
+            href={it.href}
+            className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:bg-neutral-50"
+          >
             {it.label}
-          </a>
+          </Link>
         ))}
       </div>
-
-      <style jsx>{`
-        .subnav {
-          margin-top: 8px;
-          overflow-x: auto;
-        }
-        .rail {
-          display: flex;
-          gap: 10px;
-          padding: 4px 0 6px;
-        }
-        .pill {
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: #f3f4f6;
-          border: 1px solid #e5e7eb;
-          font-size: 13px;
-          white-space: nowrap;
-        }
-        .pill:hover {
-          background: #e5e7eb;
-        }
-      `}</style>
     </nav>
   );
 }
