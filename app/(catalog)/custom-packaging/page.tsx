@@ -3,6 +3,8 @@ import Subnav from '../components/Subnav';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store'
+
 
 type Box = { id: string; name: string; style: string; base_cost_cents: number; image?: string; finishes?: string; };
 
