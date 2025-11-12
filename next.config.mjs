@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 仍讓 next-on-pages 做靜態輸出，但動態頁會交給 Functions
-  output: 'export',
+  // ❌ 移除 output:'export'，避免 Next 在 build 階段強行靜態導出動態頁
   experimental: {
     runtime: 'edge',
     serverActions: { allowedOrigins: ['*'] },
   },
   webpack: (config, { isServer }) => {
-    // ✅ 瀏覽器端：提供 node:stream 的瀏覽器替代
+    // ✅ 只在瀏覽器端提供 polyfill，避免 SSR 期觸發 self/window
     if (!isServer) {
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
@@ -19,7 +18,7 @@ const nextConfig = {
         async_hooks: false,
       };
     } else {
-      // ✅ Server/Edge 端：不要載入 browser polyfills，避免使用 self/window
+      // ✅ Server/Edge 端禁用 browser polyfills
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'node:stream': false,
