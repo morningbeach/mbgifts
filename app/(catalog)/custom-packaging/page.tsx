@@ -1,58 +1,73 @@
-// @ts-nocheck
-import FilterBar from '../components/FilterBar';
-import Subnav from '../components/Subnav';
+// app/(catalog)/custom-packaging/page.tsx
+import Subnav from "../components/Subnav";
+import FilterBar from "../components/FilterBar";
+import { boxes, money } from "@/lib/mock-data";
 
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
-export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
-
-type Box = { id: string; name: string; style: string; base_cost_cents: number; image?: string; finishes?: string };
-
-export default async function BoxesPage() {
-  // 最保險：先不吃 searchParams，等 API 完成再開
-  const url = `/api/catalog?type=boxes`;
-  const items: Box[] = await (await fetch(url, { cache: 'no-store' })).json();
+export default function CustomPackagingPage() {
+  const data = boxes;
 
   return (
-    <section className="mbg-container pad-y">
-      <h1 className="section-title">Gift Boxes</h1>
-      <p className="muted">Rigid, foldable & mailer—luxury finishes tailored to your brand.</p>
+    <main>
+      <Subnav />
+      <header className="mx-auto max-w-6xl px-4 py-10">
+        <h1 className="text-3xl font-semibold tracking-tight">Custom Packaging</h1>
+        <p className="mt-2 text-neutral-600">
+          Premium rigid, foldable and mailer boxes with foil, emboss, spot UV and more.
+        </p>
+      </header>
 
-      <FilterBar category="boxes" />
-      <Subnav
-        items={[
-          { label: 'Rigid', href: '?theme=rigid' },
-          { label: 'Mailer', href: '?theme=mailer' },
-          { label: 'Foldable', href: '?theme=foldable' },
-          { label: 'Eco options', href: '?theme=eco' },
-        ]}
-      />
+      <FilterBar />
 
-      <div className="cards-3" style={{ marginTop: 16 }}>
-        {items.map((b) => (
-          <article key={b.id} className="card">
-            <div
-              className="card-media gradient-sand"
-              style={{ backgroundImage: b.image ? `url(${b.image})` : undefined, backgroundSize: 'cover' }}
-            />
-            <div className="card-body">
-              <h3>{b.name}</h3>
-              <p className="muted">
-                {b.style} {b.finishes ? `· ${b.finishes}` : ''}
-              </p>
-              <div style={{ fontWeight: 700 }}>Base ${(b.base_cost_cents / 100).toFixed(2)}</div>
-            </div>
-          </article>
-        ))}
-        {items.length === 0 && <div className="muted" style={{ padding: 16 }}>No results match your filters.</div>}
-      </div>
+      <section className="mx-auto max-w-6xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {data.map((b) => (
+            <article
+              key={b.id}
+              className="group rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+            >
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100">
+                {b.image ? (
+                  <img
+                    src={b.image}
+                    alt={b.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
+              <div className="p-3">
+                <h3 className="text-base font-medium">{b.name}</h3>
+                <p className="mt-1 text-sm text-neutral-600">
+                  Style: {b.style.toUpperCase()}
+                  {b.finishes ? ` · Finishes: ${b.finishes}` : ""}
+                </p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-sm font-semibold">
+                    From {money(b.base_cost_cents)}
+                  </span>
+                  <a
+                    href="/contact"
+                    className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:bg-neutral-50"
+                  >
+                    Enquire
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
 
-      <div className="cta-panel" style={{ marginTop: 24 }}>
-        <h3>Customize your packaging</h3>
-        <p>Foil, emboss, spot UV, soft-touch—get a spec in 24–48h.</p>
-        <a className="btn btn-primary" href="/rfq?category=boxes">Start a Quote</a>
-      </div>
-    </section>
+        <div className="mt-10 flex justify-center">
+          <a
+            href="/contact"
+            className="rounded-full bg-black px-4 py-2 text-sm text-white hover:bg-neutral-800"
+          >
+            Tell us your specs
+          </a>
+        </div>
+      </section>
+    </main>
   );
 }
