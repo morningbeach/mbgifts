@@ -2,6 +2,7 @@
 import FilterBar from '../components/FilterBar';
 import Subnav from '../components/Subnav';
 
+
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
