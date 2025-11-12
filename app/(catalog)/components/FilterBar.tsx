@@ -1,138 +1,91 @@
-// @ts-nocheck
+"use client";
 
-export default function FilterBar({ category }: { category: 'gifts' | 'sets' | 'boxes' }) {
-  const base = category === 'gifts' ? '/gifts'
-    : category === 'sets' ? '/gift-sets'
-    : '/custom-packaging';
+import { useMemo, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-  const priceLinks =
-    category === 'boxes'
-      ? [
-          { label: 'Base <$5', href: `${base}?price=0-500` },
-          { label: '$5–$10', href: `${base}?price=500-1000` },
-          { label: '$10–$20', href: `${base}?price=1000-2000` },
-          { label: '$20+', href: `${base}?price=2000-` },
-        ]
-      : [
-          { label: 'Under $20', href: `${base}?price=0-2000` },
-          { label: '$20–$50', href: `${base}?price=2000-5000` },
-          { label: '$50–$100', href: `${base}?price=5000-10000` },
-          { label: '$100+', href: `${base}?price=10000-` },
-        ];
+type PriceRange = "any" | "0-20" | "20-50" | "50-100" | "100+";
+type Theme = "any" | "wellness" | "home" | "coffee" | "stationery";
+type Diet = "any" | "vegan" | "gluten-free" | "halal";
 
-  const themeLinks =
-    category === 'gifts'
-      ? [
-          { label: 'Coffee & Tea', href: `${base}?theme=tea` },
-          { label: 'Wellness', href: `${base}?theme=wellness` },
-          { label: 'Stationery', href: `${base}?theme=stationery` },
-          { label: 'Tech', href: `${base}?theme=tech` },
-        ]
-      : category === 'sets'
-      ? [
-          { label: 'Welcome', href: `${base}?theme=welcome` },
-          { label: 'Holiday', href: `${base}?theme=holiday` },
-          { label: 'VIP', href: `${base}?theme=vip` },
-          { label: 'Conference', href: `${base}?theme=conference` },
-        ]
-      : [
-          { label: 'Rigid', href: `${base}?theme=rigid` },
-          { label: 'Mailer', href: `${base}?theme=mailer` },
-          { label: 'Foldable', href: `${base}?theme=foldable` },
-          { label: 'Eco', href: `${base}?theme=eco` },
-        ];
+export default function FilterBar() {
+  const router = useRouter();
+  const sp = useSearchParams();
 
-  const dietLinks =
-    category === 'boxes'
-      ? [] // 包裝不需要飲食篩選
-      : [
-          { label: 'Vegan', href: `${base}?diet=vegan` },
-          { label: 'Gluten-free', href: `${base}?diet=gluten_free` },
-          { label: 'Nut-free', href: `${base}?diet=nut_free` },
-          { label: 'Halal', href: `${base}?diet=halal` },
-        ];
+  const [price, setPrice] = useState<PriceRange>(
+    (sp.get("price") as PriceRange) || "any"
+  );
+  const [theme, setTheme] = useState<Theme>(
+    (sp.get("theme") as Theme) || "any"
+  );
+  const [diet, setDiet] = useState<Diet>((sp.get("diet") as Diet) || "any");
+
+  // 將狀態同步回 URL（前端路由），目前不觸發資料請求
+  useEffect(() => {
+    const q = new URLSearchParams();
+    if (price !== "any") q.set("price", price);
+    if (theme !== "any") q.set("theme", theme);
+    if (diet !== "any") q.set("diet", diet);
+
+    const query = q.toString();
+    const next = query ? `?${query}` : "";
+    // 只更新搜尋參數，不跳頁
+    router.replace(`${next}`, { scroll: false });
+  }, [price, theme, diet, router]);
+
+  const commonSelect =
+    "block w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-black focus:outline-none";
 
   return (
-    <div className="filterbar">
-      <div className="filter-group">
-        <div className="filter-title">Price</div>
-        <div className="filter-chips">
-          {priceLinks.map((l) => (
-            <a key={l.href} className="chip" href={l.href}>
-              {l.label}
-            </a>
-          ))}
+    <section className="sticky top-0 z-10 w-full border-b border-neutral-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 py-4 sm:grid-cols-3">
+        <div>
+          <label className="mb-1 block text-xs uppercase tracking-wide text-neutral-500">
+            Price
+          </label>
+          <select
+            className={commonSelect}
+            value={price}
+            onChange={(e) => setPrice(e.target.value as PriceRange)}
+          >
+            <option value="any">Any</option>
+            <option value="0-20">$0–$20</option>
+            <option value="20-50">$20–$50</option>
+            <option value="50-100">$50–$100</option>
+            <option value="100+">$100+</option>
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs uppercase tracking-wide text-neutral-500">
+            Theme
+          </label>
+          <select
+            className={commonSelect}
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as Theme)}
+          >
+            <option value="any">Any</option>
+            <option value="wellness">Wellness</option>
+            <option value="home">Home</option>
+            <option value="coffee">Coffee</option>
+            <option value="stationery">Stationery</option>
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs uppercase tracking-wide text-neutral-500">
+            Dietary
+          </label>
+          <select
+            className={commonSelect}
+            value={diet}
+            onChange={(e) => setDiet(e.target.value as Diet)}
+          >
+            <option value="any">Any</option>
+            <option value="vegan">Vegan</option>
+            <option value="gluten-free">Gluten-free</option>
+            <option value="halal">Halal</option>
+          </select>
         </div>
       </div>
-
-      <div className="filter-group">
-        <div className="filter-title">Theme</div>
-        <div className="filter-chips">
-          {themeLinks.map((l) => (
-            <a key={l.href} className="chip" href={l.href}>
-              {l.label}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {dietLinks.length > 0 && (
-        <div className="filter-group">
-          <div className="filter-title">Dietary</div>
-          <div className="filter-chips">
-            {dietLinks.map((l) => (
-              <a key={l.href} className="chip" href={l.href}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <style jsx>{`
-        .filterbar {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-          margin: 16px 0 8px;
-          border: 1px solid var(--border, #e5e7eb);
-          border-radius: 12px;
-          padding: 12px;
-          background: var(--panel, #fff);
-        }
-        @media (min-width: 900px) {
-          .filterbar {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-        .filter-group {
-          display: grid;
-          gap: 8px;
-        }
-        .filter-title {
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: var(--muted, #6b7280);
-        }
-        .filter-chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-        .chip {
-          display: inline-block;
-          padding: 6px 10px;
-          border-radius: 999px;
-          border: 1px solid var(--border, #e5e7eb);
-          background: #fff;
-          font-size: 13px;
-          line-height: 1;
-        }
-        .chip:hover {
-          border-color: #111827;
-        }
-      `}</style>
-    </div>
+    </section>
   );
 }
