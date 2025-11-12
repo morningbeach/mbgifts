@@ -1,77 +1,75 @@
-// @ts-nocheck
-import FilterBar from '../components/FilterBar';
-import Subnav from '../components/Subnav';
+// app/(catalog)/gift-sets/page.tsx
+import Subnav from "../components/Subnav";
+import FilterBar from "../components/FilterBar";
+import { giftSets, boxes, money } from "@/lib/mock-data";
 
-export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
-type SetItem = {
-  id: string;
-  name: string;
-  price_cents?: number;
-  image?: string;
-  items_count?: number;
-};
-
-export default async function SetsPage() {
-  const url = `/api/catalog?type=sets`;
-  let items: SetItem[] = [];
-  try {
-    const res = await fetch(url, { cache: 'no-store' });
-    items = (await res.json()) as SetItem[];
-  } catch (_) {
-    items = [];
-  }
+export default function GiftSetsPage() {
+  const data = giftSets;
 
   return (
-    <section className="mbg-container pad-y">
-      <h1 className="section-title">Gift Sets</h1>
-      <p className="muted">Ready-made bundles—customizable on demand.</p>
+    <main>
+      <Subnav />
+      <header className="mx-auto max-w-6xl px-4 py-10">
+        <h1 className="text-3xl font-semibold tracking-tight">Gift Sets</h1>
+        <p className="mt-2 text-neutral-600">
+          Pre-curated bundles ready for onboarding, events and clients.
+        </p>
+      </header>
 
-      <FilterBar category="sets" />
-      <Subnav
-        items={[
-          { label: 'Welcome', href: '?theme=welcome' },
-          { label: 'Holiday', href: '?theme=holiday' },
-          { label: 'VIP', href: '?theme=vip' },
-          { label: 'Conference', href: '?theme=conference' },
-        ]}
-      />
+      <FilterBar />
 
-      <div className="cards-3" style={{ marginTop: 16 }}>
-        {items.map((s) => (
-          <article key={s.id} className="card">
-            <div
-              className="card-media gradient-dawn"
-              style={{
-                backgroundImage: s.image ? `url(${s.image})` : undefined,
-                backgroundSize: 'cover',
-              }}
-            />
-            <div className="card-body">
-              <h3>{s.name}</h3>
-              <p className="muted">{typeof s.items_count === 'number' ? `${s.items_count} items` : ''}</p>
-              {typeof s.price_cents === 'number' && (
-                <div style={{ fontWeight: 700 }}>${(s.price_cents / 100).toFixed(2)}</div>
-              )}
-            </div>
-          </article>
-        ))}
-        {items.length === 0 && (
-          <div className="muted" style={{ padding: 16 }}>
-            No results match your filters.
-          </div>
-        )}
-      </div>
+      <section className="mx-auto max-w-6xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {data.map((s) => {
+            const box = boxes.find((b) => b.id === s.box_id);
+            return (
+              <article
+                key={s.id}
+                className="group rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+              >
+                <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100">
+                  {s.image ? (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : null}
+                </div>
+                <div className="p-3">
+                  <h3 className="text-base font-medium">{s.name}</h3>
+                  <p className="mt-1 text-sm text-neutral-600">
+                    {box ? `Box: ${box.name}` : "\u00A0"}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold">
+                      {money(s.price_cents)}
+                    </span>
+                    <a
+                      href="/contact"
+                      className="rounded-full border border-neutral-200 px-3 py-1.5 text-sm hover:bg-neutral-50"
+                    >
+                      Customize
+                    </a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
 
-      <div className="cta-panel" style={{ marginTop: 24 }}>
-        <h3>Need a themed set?</h3>
-        <p>We’ll tailor a set to your event or audience.</p>
-        <a className="btn btn-primary" href="/rfq?category=sets">
-          Start a Quote
-        </a>
-      </div>
-    </section>
+        <div className="mt-10 flex justify-center">
+          <a
+            href="/contact"
+            className="rounded-full bg-black px-4 py-2 text-sm text-white hover:bg-neutral-800"
+          >
+            Start your brief
+          </a>
+        </div>
+      </section>
+    </main>
   );
 }
