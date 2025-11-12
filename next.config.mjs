@@ -1,24 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ❌ 移除 output:'export'，避免 Next 在 build 階段強行靜態導出動態頁
+  // 不做 export，讓動態頁交給 Functions 執行
   experimental: {
     runtime: 'edge',
     serverActions: { allowedOrigins: ['*'] },
   },
   webpack: (config, { isServer }) => {
-    // ✅ 只在瀏覽器端提供 polyfill，避免 SSR 期觸發 self/window
     if (!isServer) {
+      // ✅ 僅瀏覽器端提供 polyfill
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'node:stream': 'stream-browserify',
       };
       config.resolve.fallback = {
         ...(config.resolve.fallback || {}),
-        stream: require.resolve('stream-browserify'),
+        stream: 'stream-browserify',
         async_hooks: false,
       };
     } else {
-      // ✅ Server/Edge 端禁用 browser polyfills
+      // ✅ Server/Edge 端禁用瀏覽器 polyfills
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'node:stream': false,
