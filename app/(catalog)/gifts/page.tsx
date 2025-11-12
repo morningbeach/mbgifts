@@ -1,6 +1,7 @@
 // app/(catalog)/gifts/page.tsx
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 type Gift = {
   id: string; name: string; price_cents: number; image?: string; tags?: string;
