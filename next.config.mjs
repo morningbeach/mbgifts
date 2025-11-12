@@ -1,13 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 不做 export，讓動態頁交給 Functions 執行
-  experimental: {
-    runtime: 'edge',
-    serverActions: { allowedOrigins: ['*'] },
-  },
+  // 不使用 experimental.runtime；每頁用 `export const runtime = 'edge'`
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // ✅ 僅瀏覽器端提供 polyfill
+      // 只在瀏覽器端提供 polyfills
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'node:stream': 'stream-browserify',
@@ -18,7 +14,7 @@ const nextConfig = {
         async_hooks: false,
       };
     } else {
-      // ✅ Server/Edge 端禁用瀏覽器 polyfills
+      // Server/Edge 端禁用瀏覽器 polyfills，避免 `self is not defined`
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         'node:stream': false,
